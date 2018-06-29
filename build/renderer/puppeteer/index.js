@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const puppeteer_1 = require("puppeteer");
 const fs_1 = require("fs");
+// the actual metrics extraction has been taken from a hithub issue!
 const getTimeFromMetrics = (metrics, name) => metrics.metrics.find(x => x.name === name).value * 1000;
 class Puppeteer {
     static summary(url, options) {
@@ -19,14 +20,9 @@ class Puppeteer {
                 devtools: false
             });
             const page = yield browser.newPage();
-            yield page.tracing.start({ path: 'trace.json' });
-            yield page.goto(url, {
-                timeout: 60000,
-                waitUntil: 'networkidle0'
-            });
             const metrics = yield page.metrics();
             yield page.close();
-            browser.close();
+            yield browser.close();
             return metrics;
         });
     }
@@ -80,7 +76,7 @@ class Puppeteer {
                     value: HtmlResourceFinish.ts / 1000 - navigationStart
                 },
             ];
-            browser.close();
+            yield browser.close();
             return results;
         });
     }

@@ -2,6 +2,9 @@ import { launch, Page } from 'puppeteer'
 import { debug, inspect } from '../../log';
 import { readFileSync } from 'fs';
 import { Options } from '../../types';
+
+// the actual metrics extraction has been taken from a hithub issue!
+
 const getTimeFromMetrics = (metrics, name) => metrics.metrics.find(x => x.name === name).value * 1000;
 export class Puppeteer {
     static async summary(url: string, options?: Options) {
@@ -10,14 +13,9 @@ export class Puppeteer {
             devtools: false
         });
         const page = await browser.newPage();
-        await page.tracing.start({ path: 'trace.json' });
-        await page.goto(url, {
-            timeout: 60000,
-            waitUntil: 'networkidle0'
-        });
         const metrics = await page.metrics();
         await page.close();
-        browser.close();
+        await browser.close();
         return metrics;
     }
 
@@ -80,7 +78,7 @@ export class Puppeteer {
                 value: HtmlResourceFinish.ts / 1000 - navigationStart
             },
         ];
-        browser.close();
+        await browser.close();
         return results;
     }
 }
