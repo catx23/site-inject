@@ -18,16 +18,10 @@
 	"filesGlob": [
 		"./src/**/*.ts"
 	],
-	"exclude": [
-		"node_modules",
-		"./src/prototypes/**",
-		"./src/wamp/**"
-	],
 	"atom": {
 		"rewriteTsconfig": true
 	},
 	"files": [
-		"./typings/index.d.ts",
 		"./src/index.ts"
 	]
 }
