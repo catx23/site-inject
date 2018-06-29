@@ -3,7 +3,7 @@ import { debug, inspect } from '../../log';
 import { readFileSync } from 'fs';
 import { Options } from '../../types';
 
-// the actual metrics extraction has been taken from a hithub issue!
+// the actual metrics extraction has been taken from a github issue!
 
 const getTimeFromMetrics = (metrics, name) => metrics.metrics.find(x => x.name === name).value * 1000;
 export class Puppeteer {
