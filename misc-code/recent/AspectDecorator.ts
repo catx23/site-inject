@@ -65,8 +65,6 @@ function aspect({ type, advice }) {
 export function before(advice) { return aspect({ type: SIGNALS.BEFORE, advice }); }
 export function after(advice) { return aspect({ type: SIGNALS.AFTER, advice }); }
 export function around(advice) { return aspect({ type: SIGNALS.AROUND, advice }); }
-// export function error(advice) { return aspect({ type: SIGNALS.ERROR, advice }); }
-
 export default {
 	before, after, around, aspect, SIGNALS
 };
