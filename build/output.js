@@ -18,7 +18,7 @@ exports.render = (result, options) => {
             return true;
         }
         default: {
-            //should never happen since options had to be sanitized
+            //private, should never happen since options had to be sanitized
             log_1.error('output::render Invalid value in options.target');
             return false;
         }
