@@ -9,7 +9,6 @@ export enum OutputFormat {
 }
 
 export interface Options {
-    cwd?: string;
     // @TODO: support many
     url: string;
     format: OutputFormat;
@@ -17,7 +16,9 @@ export interface Options {
     target: OutputTarget;
     headless?: boolean;
     // output path
-    path?: string
+    path?: string;
+    // @TODO: required to pick profile/config files
+    cwd?: string;
 }
 
 export type OutputResult = boolean;

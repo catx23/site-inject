@@ -3,13 +3,13 @@ import * as path from 'path';
 import { Options, OutputTarget, OutputFormat } from './types';
 import { warn } from './log';
 
-const SMALL = 'http://google.co.uk';
+const LIGHT = 'http://google.co.uk';
 const HEAVY = 'http://0.0.0.0:5555/app/xcf?debug=true&xblox=debug&xgrid=debug&davinci=debug&userDirectory=/PMaster/x4mm/user;'
 
 // default options for all commands
 export const defaultOptions = (yargs: CLI.Argv) => {
     return yargs.option('url', {
-        default: HEAVY,
+        default: LIGHT,
         describe: 'The URL to analyze'
     }).option('headless', {
         default: 'true',

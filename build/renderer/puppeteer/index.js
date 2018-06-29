@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const puppeteer_1 = require("puppeteer");
-const log_1 = require("../../log");
 const fs_1 = require("fs");
 const getTimeFromMetrics = (metrics, name) => metrics.metrics.find(x => x.name === name).value * 1000;
 class Puppeteer {
@@ -25,7 +24,6 @@ class Puppeteer {
                 timeout: 60000,
                 waitUntil: 'networkidle0'
             });
-            // const metrics = await (page as any)._client.send('Performance.getMetrics');
             const metrics = yield page.metrics();
             yield page.close();
             browser.close();
@@ -45,12 +43,6 @@ class Puppeteer {
                 waitUntil: 'networkidle0'
             });
             const metrics = yield page._client.send('Performance.getMetrics');
-            // const metrics = await page.metrics();
-            /*
-            const performance = JSON.parse(await page.evaluate(
-                () => inspect('d' ,window.performance)
-            ));*/
-            log_1.inspect('metrics ', metrics);
             const navigationStart = getTimeFromMetrics(metrics, 'NavigationStart');
             yield page.tracing.stop();
             // --- extracting data from trace.json ---
@@ -60,7 +52,6 @@ class Puppeteer {
                 typeof x.args.data.url !== 'undefined' &&
                 x.args.data.url.startsWith(url)));
             const HtmlResourceSendRequest = htmlTracing.find(x => x.name === 'ResourceSendRequest');
-            // inspect('html tracing ', htmlTracing);
             const HtmlId = HtmlResourceSendRequest.args.data.requestId;
             const htmlTracingEnds = tracing.traceEvents.filter(x => (x.cat === 'devtools.timeline' &&
                 typeof x.args.data !== 'undefined' &&
@@ -89,9 +80,8 @@ class Puppeteer {
                     value: HtmlResourceFinish.ts / 1000 - navigationStart
                 },
             ];
-            log_1.inspect('results', results);
             browser.close();
-            return true;
+            return results;
         });
     }
 }

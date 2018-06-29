@@ -2,12 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const types_1 = require("./types");
 const log_1 = require("./log");
-const SMALL = 'http://google.co.uk';
+const LIGHT = 'http://google.co.uk';
 const HEAVY = 'http://0.0.0.0:5555/app/xcf?debug=true&xblox=debug&xgrid=debug&davinci=debug&userDirectory=/PMaster/x4mm/user;';
 // default options for all commands
 exports.defaultOptions = (yargs) => {
     return yargs.option('url', {
-        default: HEAVY,
+        default: LIGHT,
         describe: 'The URL to analyze'
     }).option('headless', {
         default: 'true',

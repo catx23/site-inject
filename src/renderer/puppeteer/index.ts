@@ -15,7 +15,6 @@ export class Puppeteer {
             timeout: 60000,
             waitUntil: 'networkidle0'
         });
-        // const metrics = await (page as any)._client.send('Performance.getMetrics');
         const metrics = await page.metrics();
         await page.close();
         browser.close();
@@ -48,8 +47,6 @@ export class Puppeteer {
             (x.args.data.url as string).startsWith(url)
         ));
         const HtmlResourceSendRequest = htmlTracing.find(x => x.name === 'ResourceSendRequest');
-        // inspect('html tracing ', htmlTracing);
-
         const HtmlId = HtmlResourceSendRequest.args.data.requestId;
         const htmlTracingEnds = tracing.traceEvents.filter(x => (
             x.cat === 'devtools.timeline' &&

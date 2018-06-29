@@ -11,7 +11,7 @@ export const render = (result: any, options: Options) => {
             return JSON.stringify(result, null, 2);
         }
         default: {
-            //should never happen since options had to be sanitized
+            //private, should never happen since options had to be sanitized
             error('format::render Invalid value in options.format');
             return '';
         }

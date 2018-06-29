@@ -19,7 +19,7 @@ export const render = (result: any, options: Options): OutputResult => {
             return true;
         }
         default: {
-            //should never happen since options had to be sanitized
+            //private, should never happen since options had to be sanitized
             error('output::render Invalid value in options.target');
             return false;
         }
