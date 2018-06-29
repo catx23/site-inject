@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const puppeteer_1 = require("puppeteer");
 const fs_1 = require("fs");
-// the actual metrics extraction has been taken from a hithub issue!
+// the actual metrics extraction has been taken from a github issue!
 const getTimeFromMetrics = (metrics, name) => metrics.metrics.find(x => x.name === name).value * 1000;
 class Puppeteer {
     static summary(url, options) {
