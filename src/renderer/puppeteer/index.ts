@@ -164,14 +164,12 @@ export class Puppeteer {
             const content = content_response(x.args.data.requestId);
             const data = content.args.data;
             const report = report_per_mime(data.mimeType);
-            if (report) {
-                if (data.fromCache === false) {
-                    report.value += x.args.data.encodedDataLength
-                    report.count++;
-                } else {
-                    content && console.log('have no mapping for ', content.args.data.mimeType);
-                    report.cached_count++;
-                }
+            if (data.fromCache === false) {
+                report.value += x.args.data.encodedDataLength
+                report.count++;
+            } else {
+                content && console.log('have no mapping for ', content.args.data.mimeType);
+                report.cached_count++;
             }
             ReceivedTotal.count++;
             return first + x.args.data.encodedDataLength;
