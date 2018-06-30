@@ -6,7 +6,7 @@ const jsome = require('jsome');
 jsome.level.show = true;
 const glog = console.log;
 export const log = (msg: string, ...rest: any []) => glog(chalk.magenta(msg), ...rest);
-export const info = (msg: string, d?: any) => glog(chalk.green(msg), d || '');
+export const info = (msg: string, ...rest) => glog(chalk.green(msg), ...rest);
 export const error = (msg: string, ...rest: any []) => glog(chalk.red(msg), ...rest);
 export const warn = (msg: string, d?: any) => glog(chalk.yellow(msg), d || '');
 export const debug = (msg: string, d?: any) => glog(chalk.blue(msg), d || '');

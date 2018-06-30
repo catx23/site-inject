@@ -7,7 +7,7 @@ const jsome = require('jsome');
 jsome.level.show = true;
 const glog = console.log;
 exports.log = (msg, ...rest) => glog(chalk_1.default.magenta(msg), ...rest);
-exports.info = (msg, d) => glog(chalk_1.default.green(msg), d || '');
+exports.info = (msg, ...rest) => glog(chalk_1.default.green(msg), ...rest);
 exports.error = (msg, ...rest) => glog(chalk_1.default.red(msg), ...rest);
 exports.warn = (msg, d) => glog(chalk_1.default.yellow(msg), d || '');
 exports.debug = (msg, d) => glog(chalk_1.default.blue(msg), d || '');

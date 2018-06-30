@@ -10,7 +10,7 @@ export class Puppeteer {
     static async summary(url: string, options?: Options) {
         const browser = await launch({
             headless: options.headless,
-            devtools: false
+            devtools: true
         });
         const page = await browser.newPage();
         const metrics = await page.metrics();
@@ -22,12 +22,31 @@ export class Puppeteer {
     static async detail(url: string, options?: Options) {
         const browser = await launch({
             headless: options.headless,
-            devtools: false
+            devtools: true
         });
         const page = await browser.newPage();
+        await page.setRequestInterception(true);
+
+        const mediaItem = (name: string) => { return { name, count: 0 } };
+        const media = [];
+
+        const collectResources = (type) => {
+            let record = media.find((media) => media.name === type );
+            if (!record) {
+                record = mediaItem(type);
+                media.push(record);
+            }
+            record.count++;
+        }
+
+        page.on('request', interceptedRequest => {
+            interceptedRequest.continue();
+            collectResources(interceptedRequest.resourceType())
+        });
+
         await page.tracing.start({ path: 'trace.json' });
         await page.goto(url, {
-            timeout: 60000,
+            timeout: 600000,
             waitUntil: 'networkidle0'
         });
         const metrics = await (page as any)._client.send('Performance.getMetrics');
@@ -56,6 +75,8 @@ export class Puppeteer {
         const HtmlResourceReceivedData = htmlTracingEnds.find(x => x.name === 'ResourceReceivedData');
         const HtmlResourceFinish = htmlTracingEnds.find(x => x.name === 'ResourceFinish');
 
+        inspect('HtmlResourceReceivedData',htmlTracingEnds);
+
         // --- end extracting data from trace.json ---
 
         await page.close();
@@ -79,6 +100,9 @@ export class Puppeteer {
             },
         ];
         await browser.close();
-        return results;
+        return {
+            statistics: results,
+            media: media
+        }
     }
 }

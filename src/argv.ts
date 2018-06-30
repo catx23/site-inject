@@ -1,12 +1,14 @@
-import * as CLI from 'yargs';
 import * as path from 'path';
-import { Options, OutputTarget, OutputFormat } from './types';
-import { warn } from './log';
 import { URL } from 'url';
+import * as CLI from 'yargs';
+import { warn } from './log';
+import { Options, OutputFormat, OutputTarget } from './types';
 
 
 const LIGHT = 'http://google.co.uk';
 const HEAVY = 'http://0.0.0.0:5555/app/xcf?debug=true&xblox=debug&xgrid=debug&davinci=debug&userDirectory=/PMaster/x4mm/user;'
+
+const StringToBooleanRegEx = /^\s*(true|1|on)\s*$/i;
 
 // utils to create output file name for url, format : hostname_time
 const _url_short = (url: string) =>
@@ -24,7 +26,7 @@ const default_path = (cwd: string, url: string) =>
 // default options for all commands
 export const defaultOptions = (yargs: CLI.Argv) => {
     return yargs.option('url', {
-        default: LIGHT,
+        default: HEAVY,
         describe: 'The URL to analyze'
     }).option('headless', {
         default: 'true',
@@ -37,9 +39,11 @@ export const defaultOptions = (yargs: CLI.Argv) => {
         describe: 'Output target [console|file]'
     }).option('path', {
         default: '',
-        describe: 'The target location on the local filesystem for --target==file'
+        describe: 'The target location on the local filesystem for --target=file'
+    }).option('debug', {
+        default: 'false',
+        describe: 'Enable internal debug message'
     })
-
 };
 
 // Sanitizes faulty user argv options for all commands.
@@ -60,6 +64,7 @@ export const sanitize = (argv: CLI.Arguments): Options => {
     if (!(argv.format in OutputFormat)) {
         warn(`Unknown output format ${argv.format}! Default to ${OutputFormat.text}`);
         args.format = OutputFormat.text;
-    }
+    }    
+    args.headless = StringToBooleanRegEx.test(argv.headless);
     return args;
 };

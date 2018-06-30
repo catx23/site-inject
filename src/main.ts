@@ -1,22 +1,19 @@
 #!/usr/bin/env node
+import { defaults } from './_cli'; defaults();
+
 import * as cli from 'yargs';
+const yargonaut = require('yargonaut').style('blue').helpStyle('green');
+
 import { Puppeteer } from './renderer/puppeteer';
+import { info } from './log';
+import { defaultOptions, sanitize } from './argv';
 
-const yargonaut = require('yargonaut')
-    .style('blue')
-    .helpStyle('green');
+import { register as registerSummary } from './commands/summary'; registerSummary(cli);
+import { register as registerDetail } from './commands/detail'; registerDetail(cli);
 
-cli.options('v', {
-    alias: 'version',
-    description: 'Display version number'
-});
-process.on('unhandledRejection', (reason: string) => {
-    console.error('Unhandled rejection, reason: ', reason);
-});
-
-
-import { register } from './commands/summary'; register(cli);
 const argv = cli.argv;
+
+
 if (argv.h || argv.help) {
     cli.showHelp();
     process.exit();

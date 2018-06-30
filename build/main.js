@@ -1,19 +1,14 @@
 #!/usr/bin/env node
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const _cli_1 = require("./_cli");
+_cli_1.defaults();
 const cli = require("yargs");
-const yargonaut = require('yargonaut')
-    .style('blue')
-    .helpStyle('green');
-cli.options('v', {
-    alias: 'version',
-    description: 'Display version number'
-});
-process.on('unhandledRejection', (reason) => {
-    console.error('Unhandled rejection, reason: ', reason);
-});
+const yargonaut = require('yargonaut').style('blue').helpStyle('green');
 const summary_1 = require("./commands/summary");
 summary_1.register(cli);
+const detail_1 = require("./commands/detail");
+detail_1.register(cli);
 const argv = cli.argv;
 if (argv.h || argv.help) {
     cli.showHelp();
