@@ -11,10 +11,13 @@ const HEAVY = 'http://0.0.0.0:5555/app/xcf?debug=true&xblox=debug&xgrid=debug&da
 // utils to create output file name for url, format : hostname_time
 const _url_short = (url: string) =>
     new URL(url).hostname;
+
 const _date_suffix = () =>
     new Date().toLocaleTimeString().replace(/:/g, '_');
+
 const _default_filename = (url: string) =>
     `${_url_short(url)}_${_date_suffix()}`;
+
 const default_path = (cwd: string, url: string) =>
     `${path.join(cwd, _default_filename(url))}.json`;
 
@@ -41,7 +44,7 @@ export const defaultOptions = (yargs: CLI.Argv) => {
 
 // Sanitizes faulty user argv options for all commands.
 export const sanitize = (argv: CLI.Arguments): Options => {
-    const args = argv as Options;    
+    const args = argv as Options;
     args.cwd = args.cwd || process.cwd();
     // path given but target is not file, correct to file
     if (args.path && args.target !== OutputTarget.FILE) {
