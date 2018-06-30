@@ -10,10 +10,10 @@ export enum OutputFormat {
 
 export interface Options {
     // @TODO: support many
-    url: string;
-    format: OutputFormat;
+    url?: string;
+    format?: OutputFormat;
     // @TODO: support many
-    target: OutputTarget;
+    target?: OutputTarget;
     headless?: boolean;
     // output path
     path?: string;

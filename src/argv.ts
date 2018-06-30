@@ -2,9 +2,21 @@ import * as CLI from 'yargs';
 import * as path from 'path';
 import { Options, OutputTarget, OutputFormat } from './types';
 import { warn } from './log';
+import { URL } from 'url';
+
 
 const LIGHT = 'http://google.co.uk';
 const HEAVY = 'http://0.0.0.0:5555/app/xcf?debug=true&xblox=debug&xgrid=debug&davinci=debug&userDirectory=/PMaster/x4mm/user;'
+
+// utils to create output file name for url, format : hostname_time
+const _url_short = (url: string) =>
+    new URL(url).hostname;
+const _date_suffix = () =>
+    new Date().toLocaleTimeString().replace(/:/g, '_');
+const _default_filename = (url: string) =>
+    `${_url_short(url)}_${_date_suffix()}`;
+const default_path = (cwd: string, url: string) =>
+    `${path.join(cwd, _default_filename(url))}.json`;
 
 // default options for all commands
 export const defaultOptions = (yargs: CLI.Argv) => {
@@ -28,22 +40,23 @@ export const defaultOptions = (yargs: CLI.Argv) => {
 };
 
 // Sanitizes faulty user argv options for all commands.
-export const sanitize = (argv: any): Options => {
-    const args = argv as Options;
+export const sanitize = (argv: CLI.Arguments): Options => {
+    const args = argv as Options;    
+    args.cwd = args.cwd || process.cwd();
     // path given but target is not file, correct to file
-    if (args.path && args.target === OutputTarget.FILE) {
+    if (args.path && args.target !== OutputTarget.FILE) {
         args.target = OutputTarget.FILE;
-        warn('Path specified but target is not file! Correcting user argument to file ');
     }
     // target is file but no path given, correct to console
     if (args.target === OutputTarget.FILE && !args.path) {
-        args.target = OutputTarget.STDOUT;
-        warn('Target is file but no path specified! Correcting user argument to console');
+        // args.target = OutputTarget.STDOUT;
+        args.path = default_path(args.cwd, args.url);
+        warn(`Target is file but no path specified! Using default file:  ${args.path}`);
     }
     // format string not properly passed
     if (!(argv.format in OutputFormat)) {
         warn(`Unknown output format ${argv.format}! Default to ${OutputFormat.text}`);
         args.format = OutputFormat.text;
     }
-    return argv;
+    return args;
 };

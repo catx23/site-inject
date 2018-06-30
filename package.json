@@ -1,14 +1,17 @@
 {
-  "name": "playground",
+  "name": "analyze-site",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./build/main.js",
+  "bin": {
+    "analyze-site": "./build/main.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon -w src -x ts-node src/main.ts",
     "help": "node build/main.js --help",
     "build": "tsc -p .",
-    "summary": "node ./build/main.js summary"
+    "summary": "yarn build; node ./build/main.js summary --target=file"
   },
   "repository": {
     "type": "git",
