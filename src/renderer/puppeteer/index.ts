@@ -113,14 +113,9 @@ export class Puppeteer {
             'application/font-woff2': ReceivedFonts
         }
 
-
         await page.tracing.start({
             path: 'trace2.json',
             categories: included_categories
-        });
-        await page.goto(url, {
-            timeout: 600000,
-            waitUntil: 'networkidle0'
         });
         const metrics = await (page as any)._client.send('Performance.getMetrics');
 
