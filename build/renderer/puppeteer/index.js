@@ -11,27 +11,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const puppeteer_1 = require("puppeteer");
 const fs_1 = require("fs");
 // the actual metrics extraction has been taken from a github issue!
-const ignored_categories = [''];
 const included_categories = ['devtools.timeline'];
-const createReportItem = (name) => {
+const report_item = (name) => {
     return {
         name: name,
         value: 0,
         formatted: '',
-        count: 0
+        count: 0,
+        cached_count: 0
     };
 };
-const create_report = () => {
+const report = () => {
     return [
-        createReportItem('Received Total'),
-        createReportItem('Received Stylesheets'),
-        createReportItem('Received Scripts'),
-        createReportItem('Received HTML'),
-        createReportItem('Received JSON'),
-        createReportItem('Received Images'),
-        createReportItem('Received Fonts'),
-        createReportItem('Received Binary')
+        report_item('Received Total'),
+        report_item('Received Stylesheets'),
+        report_item('Received Scripts'),
+        report_item('Received HTML'),
+        report_item('Received JSON'),
+        report_item('Received Images'),
+        report_item('Received Fonts'),
+        report_item('Received Binary')
     ];
+};
+const find_report = (where, name) => where.find((media) => media.name === name);
+const get_report = (where, type) => {
+    let record = find_report(where, type);
+    if (!record) {
+        record = report_item(type);
+        where.push(record);
+    }
+    return record;
 };
 const humanReadableFileSize = (bytes, si = true) => {
     var units;
@@ -83,27 +92,15 @@ class Puppeteer {
     static detail(url, options) {
         return __awaiter(this, void 0, void 0, function* () {
             const page = yield this.begin(url, options);
-            yield page.setRequestInterception(true);
-            const create_resource = (name) => { return { name, count: 0 }; };
-            const find_resource = (name) => media.find((media) => media.name === name);
-            const get_resource = (type) => {
-                let record = find_resource(type);
-                if (!record) {
-                    record = create_resource(type);
-                    media.push(record);
-                }
-                return record;
-            };
-            const media = [];
-            const report = create_report();
-            const ReceivedTotal = report.find((item) => item.name === 'Received Total');
-            const ReceivedStyleSheets = report.find((item) => item.name === 'Received Stylesheets');
-            const ReceivedScripts = report.find((item) => item.name === 'Received Scripts');
-            const ReceivedHTML = report.find((item) => item.name === 'Received HTML');
-            const ReceivedImages = report.find((item) => item.name === 'Received Images');
-            const ReceivedJSON = report.find((item) => item.name === 'Received JSON');
-            const ReceivedFonts = report.find((item) => item.name === 'Received Fonts');
-            const ReceivedBinary = report.find((item) => item.name === 'Received Binary');
+            const network_stats = report();
+            const ReceivedTotal = get_report(network_stats, 'Received Total');
+            const ReceivedStyleSheets = get_report(network_stats, 'Received Stylesheets');
+            const ReceivedScripts = get_report(network_stats, 'Received Scripts');
+            const ReceivedHTML = get_report(network_stats, 'Received HTML');
+            const ReceivedImages = get_report(network_stats, 'Received Images');
+            const ReceivedJSON = get_report(network_stats, 'Received JSON');
+            const ReceivedFonts = get_report(network_stats, 'Received Fonts');
+            const ReceivedBinary = get_report(network_stats, 'Received Binary');
             const MimeMap = {
                 'application/javascript': ReceivedScripts,
                 'text/javascript': ReceivedScripts,
@@ -117,14 +114,6 @@ class Puppeteer {
                 'font/woff2': ReceivedFonts,
                 'application/font-woff2': ReceivedFonts
             };
-            const collectResource = (type) => {
-                let record = get_resource(type);
-                record.count++;
-            };
-            page.on('request', interceptedRequest => {
-                interceptedRequest.continue();
-                collectResource(interceptedRequest.resourceType());
-            });
             yield page.tracing.start({
                 path: 'trace2.json',
                 categories: included_categories
@@ -137,7 +126,7 @@ class Puppeteer {
             const navigationStart = getTimeFromMetrics(metrics, 'NavigationStart');
             yield page.tracing.stop();
             // --- extracting data from trace.json ---
-            const tracing = JSON.parse(fs_1.readFileSync('./trace.json', 'utf8'));
+            const tracing = JSON.parse(fs_1.readFileSync('./trace2.json', 'utf8'));
             const htmlTracing = tracing.traceEvents.filter(x => (x.cat === 'devtools.timeline' &&
                 typeof x.args.data !== 'undefined' &&
                 typeof x.args.data.url !== 'undefined' &&
@@ -153,21 +142,27 @@ class Puppeteer {
             const HtmlResourceFinish = htmlTracingEnds.find(x => x.name === 'ResourceFinish');
             const dataReceivedEvents = tracing.traceEvents.filter(x => x.name === 'ResourceReceivedData');
             const dataResponseEvents = tracing.traceEvents.filter(x => x.name === 'ResourceReceiveResponse');
-            const content_response = (requestId) => {
-                return dataResponseEvents.find((x) => {
-                    return x.args.data.requestId === requestId;
-                });
-            };
+            // find resource in responses or return default empty
+            const content_response = (requestId) => dataResponseEvents.find((x) => x.args.data.requestId === requestId)
+                ||
+                    {
+                        args: { data: { encodedDataLength: 0 } }
+                    };
+            const report_per_mime = (mime) => MimeMap[mime] || get_report(network_stats, mime);
             // total received
             ReceivedTotal.value = dataReceivedEvents.reduce((first, x) => {
                 const content = content_response(x.args.data.requestId);
-                if (content && content.args.data.mimeType in MimeMap) {
-                    // console.log(content.args.data.mimeType);
-                    MimeMap[content.args.data.mimeType].value += x.args.data.encodedDataLength;
-                    MimeMap[content.args.data.mimeType].count++;
-                }
-                else {
-                    content && console.log('have no mapping for ', content.args.data.mimeType);
+                const data = content.args.data;
+                const report = report_per_mime(data.mimeType);
+                if (report) {
+                    if (data.fromCache === false) {
+                        report.value += x.args.data.encodedDataLength;
+                        report.count++;
+                    }
+                    else {
+                        content && console.log('have no mapping for ', content.args.data.mimeType);
+                        report.cached_count++;
+                    }
                 }
                 ReceivedTotal.count++;
                 return first + x.args.data.encodedDataLength;
@@ -204,9 +199,8 @@ class Puppeteer {
             const browser = yield page.browser();
             browser.close();
             return {
-                statistics: results,
-                media: media,
-                memory: report
+                times: results,
+                network: network_stats
             };
         });
     }
