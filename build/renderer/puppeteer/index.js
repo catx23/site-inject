@@ -18,7 +18,9 @@ const report_item = (name) => {
         value: 0,
         formatted: '',
         count: 0,
-        cached_count: 0
+        cached_count: 0,
+        external_count: 0,
+        local_count: 0
     };
 };
 const report = () => {

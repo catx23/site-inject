@@ -42,7 +42,7 @@ exports.sanitize = (argv) => {
     if (args.path && args.target !== types_1.OutputTarget.FILE) {
         args.target = types_1.OutputTarget.FILE;
     }
-    // target is file but no path given, correct to console
+    // target is file but no path given, correct to default file
     if (args.target === types_1.OutputTarget.FILE && !args.path) {
         // args.target = OutputTarget.STDOUT;
         args.path = default_path(args.cwd, args.url);

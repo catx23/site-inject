@@ -54,7 +54,7 @@ export const sanitize = (argv: CLI.Arguments): Options => {
     if (args.path && args.target !== OutputTarget.FILE) {
         args.target = OutputTarget.FILE;
     }
-    // target is file but no path given, correct to console
+    // target is file but no path given, correct to default file
     if (args.target === OutputTarget.FILE && !args.path) {
         // args.target = OutputTarget.STDOUT;
         args.path = default_path(args.cwd, args.url);
