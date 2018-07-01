@@ -24,7 +24,7 @@ export interface Options {
     // @TODO: required to pick profile/config files
     cwd?: string;
     // @TODO: time of sesssion, mapped to Puppeteer waitUntil, if it's a number, the session will be opened for that 
-    // time window, time=-1 means infinty, useful for repl. sessions
+    // time window, time=-1 means infinity, useful for repl. sessions
     time?: number;
     // @TODO: reload interval
     reload?: number;
@@ -45,7 +45,7 @@ export type NetworkReportEntry = ReportEntry & {
     cached_count: number;
     external_count: number;
     local_count: number;
-    times: {
+    times?: {
         end: number,
         formatted: string;
     }

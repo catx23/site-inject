@@ -19,7 +19,7 @@ const included_categories = ['devtools.timeline'];
 export class Puppeteer {
 
     static async begin(url: string, options: Options) {
-
+        
         const browser = await launch({
             headless: options.headless,
             devtools: false
@@ -28,6 +28,7 @@ export class Puppeteer {
     }
 
     static async end(page: Page) {
+        
         const browser = await page.browser();
         await page.close();
         await browser.close();
