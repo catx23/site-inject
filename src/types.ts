@@ -1,3 +1,7 @@
+/////////////////////////////////////////////////////
+//
+//  Application types
+//
 export enum OutputTarget {
     STDOUT = 'console',
     FILE = 'file'
@@ -30,8 +34,70 @@ export interface Options {
 
 export type OutputResult = boolean;
 
-// @TODOs
-export interface RenderType {
-    LOCAL: 1,
-    REMOTE: 2
+export interface ReportEntry {
+    name: string;
+}
+
+export type NetworkReportEntry = ReportEntry & {
+    value: number;
+    formatted: string;
+    count: number;
+    cached_count: number;
+    external_count: number;
+    local_count: number;
+    times: {
+        end: number,
+        formatted: string;
+    }
+}
+
+/////////////////////////////////////////////////////
+//
+//  Foreign data types (trace data)
+//
+
+// type for a network resource's timing
+export interface ResourceTiming {
+    requestTime: number;
+    proxyStart: number;
+    proxyEnd: number;
+    dnsStart: number;
+    dnsEnd: number;
+    connectStart: number;
+    connectEnd: number;
+    sslStart: number;
+    sslEnd: number;
+    workerStart: number;
+    workerReady: number;
+    sendStart: number;
+    sendEnd: number;
+    receiveHeadersEnd: number;
+    pushStart: number;
+    pushEnd: number;
+}
+
+export interface Data {
+    requestId: string;
+    frame: string;
+    statusCode: number;
+    mimeType: string;
+    encodedDataLength: number;
+    fromCache: boolean;
+    fromServiceWorker: boolean;
+    timing: ResourceTiming;
+}
+export interface Args {
+    data: Data;
+}
+
+export interface ResourceEntry {
+    pid: number;
+    tid: number;
+    ts: number;
+    ph: string;
+    cat: string;
+    name: string;
+    args: Args;
+    tts: number;
+    s: string;
 }

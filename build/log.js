@@ -9,9 +9,9 @@ const glog = console.log;
 exports.log = (msg, ...rest) => glog(chalk_1.default.magenta(msg), ...rest);
 exports.info = (msg, ...rest) => glog(chalk_1.default.green(msg), ...rest);
 exports.error = (msg, ...rest) => glog(chalk_1.default.red(msg), ...rest);
-exports.warn = (msg, d) => glog(chalk_1.default.yellow(msg), d || '');
-exports.debug = (msg, d) => glog(chalk_1.default.blue(msg), d || '');
-exports.stack = (msg, d) => glog(chalk_1.default.red(msg), new Error().stack);
+exports.warn = (msg, ...rest) => glog(chalk_1.default.yellow(msg), ...rest);
+exports.debug = (msg, ...rest) => glog(chalk_1.default.blue(msg), ...rest);
+exports.stack = (msg, ...rest) => glog(chalk_1.default.red(msg), new Error().stack);
 exports.inspect = (msg, d = null, pretty = true) => {
     glog(chalk_1.default.blue(msg));
     d && jsome(d);

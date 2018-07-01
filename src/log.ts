@@ -5,12 +5,12 @@ import * as _ora from 'ora';
 const jsome = require('jsome');
 jsome.level.show = true;
 const glog = console.log;
-export const log = (msg: string, ...rest: any []) => glog(chalk.magenta(msg), ...rest);
+export const log = (msg: string, ...rest: any[]) => glog(chalk.magenta(msg), ...rest);
 export const info = (msg: string, ...rest) => glog(chalk.green(msg), ...rest);
-export const error = (msg: string, ...rest: any []) => glog(chalk.red(msg), ...rest);
-export const warn = (msg: string, d?: any) => glog(chalk.yellow(msg), d || '');
-export const debug = (msg: string, d?: any) => glog(chalk.blue(msg), d || '');
-export const stack = (msg: string, d?: any) => glog(chalk.red(msg), new Error().stack);
+export const error = (msg: string, ...rest: any[]) => glog(chalk.red(msg), ...rest);
+export const warn = (msg: string, ...rest) => glog(chalk.yellow(msg), ...rest);
+export const debug = (msg: string, ...rest) => glog(chalk.blue(msg), ...rest);
+export const stack = (msg: string, ...rest) => glog(chalk.red(msg), new Error().stack);
 export const inspect = (msg: string, d: any = null, pretty: boolean = true) => {
     glog(chalk.blue(msg));
     d && jsome(d);

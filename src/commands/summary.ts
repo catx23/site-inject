@@ -1,7 +1,7 @@
 import * as CLI from 'yargs';
 import { defaultOptions, sanitize } from '../argv';
 import { Puppeteer } from '../renderer/puppeteer';
-import { Options } from '../types';
+import { Options } from '../';
 import { render as output } from '../output';
 // no extra options, using defaults
 const options = (yargs: CLI.Argv) => defaultOptions(yargs);
