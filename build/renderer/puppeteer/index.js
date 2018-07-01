@@ -24,6 +24,13 @@ class Puppeteer {
             return yield browser.newPage();
         });
     }
+    static end(page) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const browser = yield page.browser();
+            yield page.close();
+            yield browser.close();
+        });
+    }
     static summary(url, options) {
         return __awaiter(this, void 0, void 0, function* () {
             const browser = yield puppeteer_1.launch({
@@ -39,7 +46,6 @@ class Puppeteer {
     }
     static detail(url, options) {
         return __awaiter(this, void 0, void 0, function* () {
-            const page = yield this.begin(url, options);
             const network_stats = report_1.report();
             const ReceivedTotal = report_1.get_report(network_stats, 'Received Total');
             const ReceivedStyleSheets = report_1.get_report(network_stats, 'Received Stylesheets');
@@ -63,6 +69,7 @@ class Puppeteer {
                 'application/font-woff2': ReceivedFonts
             };
             const traceFile = _1.default_trace_path(options.cwd, url);
+            const page = yield this.begin(url, options);
             yield page.tracing.start({
                 path: traceFile,
                 categories: included_categories
@@ -90,6 +97,7 @@ class Puppeteer {
             // @TODO: calculate times
             // @TODO: filter
             // @TODO: options.mask
+            // @TODO: this iterator might get async
             ReceivedTotal.value = dataReceivedEvents.reduce((first, x) => {
                 const content = content_response(x.args.data.requestId);
                 const data = content.args.data;
@@ -104,16 +112,16 @@ class Puppeteer {
                 ReceivedTotal.count++;
                 return first + x.args.data.encodedDataLength;
             }, ReceivedTotal.value);
+            // calulate finals
             [ReceivedTotal, ReceivedHTML, ReceivedImages, ReceivedJSON,
                 ReceivedScripts, ReceivedFonts, ReceivedBinary
             ].forEach((r) => r.formatted = _1.sizeToString(r.value));
             // --- end extracting data from trace.json ---
-            yield page.close();
             let results = [];
-            const browser = yield page.browser();
-            browser.close();
+            // lights off
+            yield this.end(page);
             return {
-                times: results,
+                times: [],
                 network: network_stats
             };
         });

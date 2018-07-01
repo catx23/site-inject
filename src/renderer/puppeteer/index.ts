@@ -17,15 +17,24 @@ import { report, find_report, get_report } from './report';
 const included_categories = ['devtools.timeline'];
 
 export class Puppeteer {
+
     static async begin(url: string, options: Options) {
+
         const browser = await launch({
             headless: options.headless,
             devtools: false
         });
-
         return await browser.newPage();
     }
+
+    static async end(page: Page) {
+        const browser = await page.browser();
+        await page.close();
+        await browser.close();
+    }
+
     static async summary(url: string, options?: Options) {
+
         const browser = await launch({
             headless: options.headless,
             devtools: true
@@ -38,8 +47,6 @@ export class Puppeteer {
     }
 
     static async detail(url: string, options?: Options) {
-
-        const page = await this.begin(url, options);
 
         const network_stats = report();
         const ReceivedTotal = get_report(network_stats, 'Received Total');
@@ -66,6 +73,7 @@ export class Puppeteer {
 
         const traceFile = default_trace_path(options.cwd, url);
 
+        const page = await this.begin(url, options);
         await page.tracing.start({
             path: traceFile,
             categories: included_categories
@@ -99,6 +107,7 @@ export class Puppeteer {
         // @TODO: calculate times
         // @TODO: filter
         // @TODO: options.mask
+        // @TODO: this iterator might get async
         ReceivedTotal.value = dataReceivedEvents.reduce((first, x) => {
             const content = content_response(x.args.data.requestId);
             const data = content.args.data;
@@ -113,21 +122,20 @@ export class Puppeteer {
             return first + x.args.data.encodedDataLength;
         }, ReceivedTotal.value);
 
+        // calulate finals
         [ReceivedTotal, ReceivedHTML, ReceivedImages, ReceivedJSON,
             ReceivedScripts, ReceivedFonts, ReceivedBinary
         ].forEach((r) => r.formatted = sizeToString(r.value))
 
         // --- end extracting data from trace.json ---
 
-        await page.close();
+        let results = [];
 
-        let results = [
-        ];
-        const browser = await page.browser();
-        browser.close();
+        // lights off
+        await this.end(page);
 
         return {
-            times: results,
+            times: [],
             network: network_stats
         }
     }
