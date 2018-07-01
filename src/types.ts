@@ -32,6 +32,18 @@ export interface Options {
     repl?: string;
 }
 
+export type OptionsEx = Options & {
+    launchOptions?: {
+        // puppeteer launch options
+    }
+    waitOptions?: {
+        // puppeteer wait options: wait for selector,...
+    }
+    replOptions?: {
+        script?: string;
+    }
+}
+
 export type OutputResult = boolean;
 
 export interface ReportEntry {
