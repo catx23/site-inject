@@ -1,5 +1,5 @@
-import { ResourceEntry } from '../../types'
-export const end_time = (entry: ResourceEntry): number => {
+import { TraceEntry } from '../../types'
+export const end_time = (entry: TraceEntry): number => {
     const timing = entry.args.data.timing;
     const start = timing.requestTime;
     const received = entry.ts;

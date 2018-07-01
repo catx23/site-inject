@@ -69,7 +69,7 @@ export type NetworkReportEntry = ReportEntry & {
 //
 
 // type for a network resource's timing
-export interface ResourceTiming {
+export interface TraceTiming {
     requestTime: number;
     proxyStart: number;
     proxyEnd: number;
@@ -88,7 +88,7 @@ export interface ResourceTiming {
     pushEnd: number;
 }
 
-export interface Data {
+export interface TraceData {
     requestId: string;
     frame: string;
     statusCode: number;
@@ -96,20 +96,20 @@ export interface Data {
     encodedDataLength: number;
     fromCache: boolean;
     fromServiceWorker: boolean;
-    timing: ResourceTiming;
+    timing: TraceTiming;
 }
-export interface Args {
-    data: Data;
+export interface TraceArgs {
+    data: TraceData;
 }
 
-export interface ResourceEntry {
+export interface TraceEntry {
     pid: number;
     tid: number;
     ts: number;
     ph: string;
     cat: string;
     name: string;
-    args: Args;
+    args: TraceArgs;
     tts: number;
     s: string;
 }

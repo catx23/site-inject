@@ -4,7 +4,7 @@ import * as moment from 'moment';
 
 import {
     debug, inspect,
-    Options, ResourceEntry, ResourceTiming,
+    Options, TraceEntry, TraceTiming,
     default_trace_path,
     ReportEntry,
     NetworkReportEntry,
@@ -96,11 +96,11 @@ export class Puppeteer {
         const dataResponseEvents = tracing.traceEvents.filter(x => x.name === 'ResourceReceiveResponse');
 
         // find resource in responses or return default empty
-        const content_response = (requestId: string): ResourceEntry => dataResponseEvents.find((x) =>
+        const content_response = (requestId: string): TraceEntry => dataResponseEvents.find((x) =>
             x.args.data.requestId === requestId)
             || { args: { data: { encodedDataLength: 0 } } };
 
-        const report_per_mime = (mime: string) => MimeMap[mime] || get_report(network_stats, mime);
+        const report_per_mime = (mime: string) : NetworkReportEntry => MimeMap[mime] || get_report(network_stats, mime);
 
         // our iteration over the trace
         // @TODO: convert to a better tree structure to avoid O(n) lookups
