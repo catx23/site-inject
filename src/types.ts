@@ -30,6 +30,15 @@ export interface Options {
     reload?: number;
     // @TODO: repl. --repl=true=interactive or repl=path to specify script
     repl?: string;
+    // TODO: colored ouput
+    colors?: boolean;
+}
+
+// options for certain categories as network, rendering,...
+export interface OptionEx {
+    include?: string | string[];
+    exclude?: string | string[];
+    query?: string | string[];
 }
 
 export type OptionsEx = Options & {

@@ -11,7 +11,7 @@ import {
     sizeToString
 } from '../../';
 import { end_time } from './times';
-import { getTimeFromMetrics } from './trace';
+import { find_time } from './trace';
 import { report, find_report, get_report } from './report';
 
 const included_categories = ['devtools.timeline'];
@@ -19,7 +19,7 @@ const included_categories = ['devtools.timeline'];
 export class Puppeteer {
 
     static async begin(url: string, options: Options) {
-        
+
         const browser = await launch({
             headless: options.headless,
             devtools: false
@@ -28,7 +28,7 @@ export class Puppeteer {
     }
 
     static async end(page: Page) {
-        
+
         const browser = await page.browser();
         await page.close();
         await browser.close();
@@ -86,7 +86,7 @@ export class Puppeteer {
         const metrics = await (page as any)._client.send('Performance.getMetrics');
         const nowTs = new Date().getTime();
         // const navigationStart = getTimeFromMetrics(metrics, 'NavigationStart');
-        const navigationStart = getTimeFromMetrics(metrics, 'Timestamp') + nowTs;
+        const navigationStart = find_time(metrics, 'Timestamp') + nowTs;
         await page.tracing.stop();
 
         // --- extracting data from trace.json ---
@@ -95,12 +95,15 @@ export class Puppeteer {
         const dataReceivedEvents = tracing.traceEvents.filter(x => x.name === 'ResourceReceivedData');
         const dataResponseEvents = tracing.traceEvents.filter(x => x.name === 'ResourceReceiveResponse');
 
+        // const test = find_time(dataReceivedEvents, 'ResourceReceivedData');
+        inspect('test', dataReceivedEvents.find(x => x.name === 'ResourceReceivedData'));
+
         // find resource in responses or return default empty
         const content_response = (requestId: string): TraceEntry => dataResponseEvents.find((x) =>
             x.args.data.requestId === requestId)
             || { args: { data: { encodedDataLength: 0 } } };
 
-        const report_per_mime = (mime: string) : NetworkReportEntry => MimeMap[mime] || get_report(network_stats, mime);
+        const report_per_mime = (mime: string): NetworkReportEntry => MimeMap[mime] || get_report(network_stats, mime);
 
         // our iteration over the trace
         // @TODO: convert to a better tree structure to avoid O(n) lookups

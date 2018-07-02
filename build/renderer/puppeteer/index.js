@@ -81,12 +81,14 @@ class Puppeteer {
             const metrics = yield page._client.send('Performance.getMetrics');
             const nowTs = new Date().getTime();
             // const navigationStart = getTimeFromMetrics(metrics, 'NavigationStart');
-            const navigationStart = trace_1.getTimeFromMetrics(metrics, 'Timestamp') + nowTs;
+            const navigationStart = trace_1.find_time(metrics, 'Timestamp') + nowTs;
             yield page.tracing.stop();
             // --- extracting data from trace.json ---
             const tracing = JSON.parse(fs_1.readFileSync(traceFile, 'utf8').trim());
             const dataReceivedEvents = tracing.traceEvents.filter(x => x.name === 'ResourceReceivedData');
             const dataResponseEvents = tracing.traceEvents.filter(x => x.name === 'ResourceReceiveResponse');
+            // const test = find_time(dataReceivedEvents, 'ResourceReceivedData');
+            _1.inspect('test', dataReceivedEvents.find(x => x.name === 'ResourceReceivedData'));
             // find resource in responses or return default empty
             const content_response = (requestId) => dataResponseEvents.find((x) => x.args.data.requestId === requestId)
                 || { args: { data: { encodedDataLength: 0 } } };
