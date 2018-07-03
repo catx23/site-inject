@@ -11,6 +11,8 @@ const detail_1 = require("./commands/detail");
 detail_1.register(cli);
 const repl_1 = require("./commands/repl");
 repl_1.register(cli);
+const clean_1 = require("./commands/clean");
+clean_1.register(cli);
 const argv = cli.argv;
 if (argv.h || argv.help) {
     cli.showHelp();

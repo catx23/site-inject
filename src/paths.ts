@@ -12,7 +12,7 @@ const _default_filename = (url: string) =>
     `${_url_short(url)}_${_date_suffix()}`;
 
 export const default_path = (cwd: string, url: string) =>
-    `${path.join(cwd, _default_filename(url))}.json`;
+    `${path.join(cwd, _default_filename(url))}_stats.json`;
 
 export const default_trace_path = (cwd: string, url: string) =>
     `${path.join(cwd, _default_filename(url))}_trace.json`;

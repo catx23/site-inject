@@ -2,6 +2,8 @@ import { createInterface, ReadLine } from 'readline';
 import { Page } from 'puppeteer';
 import chalk from 'chalk';
 
+
+
 export const rl = (prompt: string, onLine?: (line: string) => void, onClose?: () => {}) => {
     const rl = createInterface({
         input: process.stdin,

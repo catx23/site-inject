@@ -10,12 +10,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const puppeteer_1 = require("puppeteer");
 const fs_1 = require("fs");
+const remove_1 = require("@xblox/fs/remove");
+const iterator_1 = require("@xblox/fs/iterator");
 const _1 = require("../../");
 const trace_1 = require("./trace");
 const stdin_1 = require("./stdin");
 const report_1 = require("./report");
 const included_categories = ['devtools.timeline'];
 class Puppeteer {
+    static clean(url, options) {
+        iterator_1.async(options.cwd, {
+            matching: ['*_trace.json', '*_stats.json']
+        }).then((it) => {
+            let node = null;
+            while (node = it.next()) {
+                remove_1.sync(node.path);
+            }
+        });
+    }
     static begin(url, options) {
         return __awaiter(this, void 0, void 0, function* () {
             const browser = yield puppeteer_1.launch({
@@ -25,16 +37,19 @@ class Puppeteer {
             return yield browser.newPage();
         });
     }
+    static crawler(url, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const page = yield this.begin(url, options);
+        });
+    }
     static repl(url, options) {
         return __awaiter(this, void 0, void 0, function* () {
             const page = yield this.begin(url, options);
             page.on('console', msg => _1.inspect('Console Message:', msg.text()));
-            const spin = _1.spinner(`Start navigating to ${url}`);
             yield page.goto(url, {
                 timeout: 600000,
                 waitUntil: 'networkidle0'
             });
-            // spin.stop();
             const readline = stdin_1.rl(`${url}#`, (line) => {
                 page.evaluate(line).then((results) => {
                     _1.inspect(`Did evaluate ${line} to `, results);

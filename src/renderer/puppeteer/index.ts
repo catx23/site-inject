@@ -1,7 +1,8 @@
 import { launch, Page } from 'puppeteer'
 import { readFileSync } from 'fs';
 import * as moment from 'moment';
-
+import { sync as unlink } from '@xblox/fs/remove';
+import { async as iterator } from '@xblox/fs/iterator';
 import {
     debug, inspect,
     Options, TraceEntry, TraceTiming,
@@ -16,10 +17,22 @@ import { end_time } from './times';
 import { find_time } from './trace';
 import { rl } from './stdin';
 import { report, find_report, get_report } from './report';
+import { IProcessingNode } from '@xblox/fs/interfaces';
 
 const included_categories = ['devtools.timeline'];
 
 export class Puppeteer {
+
+    static clean(url: string, options: Options) {
+        iterator(options.cwd, {
+            matching: ['*_trace.json', '*_stats.json']
+        }).then((it) => {
+            let node: IProcessingNode = null;
+            while (node = it.next()) {
+                unlink(node.path);
+            }
+        })
+    }
 
     static async begin(url: string, options: Options) {
 
@@ -34,13 +47,13 @@ export class Puppeteer {
     }
     static async repl(url: string, options?: Options) {
         const page = await this.begin(url, options);
-        page.on('console', msg => inspect('Console Message:',msg.text()));
+        page.on('console', msg => inspect('Console Message:', msg.text()));
 
         await page.goto(url, {
             timeout: 600000,
             waitUntil: 'networkidle0'
         });
-        
+
         const readline = rl(`${url}#`, (line: string) => {
             page.evaluate(line).then((results) => {
                 inspect(`Did evaluate ${line} to `, results);

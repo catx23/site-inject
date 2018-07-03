@@ -11,6 +11,7 @@ import { defaultOptions, sanitize } from './argv';
 import { register as registerSummary } from './commands/summary'; registerSummary(cli);
 import { register as registerDetail } from './commands/detail'; registerDetail(cli);
 import { register as registerRepl } from './commands/repl'; registerRepl(cli);
+import { register as registerClean } from './commands/clean'; registerClean(cli);
 
 const argv = cli.argv;
 
