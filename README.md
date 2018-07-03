@@ -20,3 +20,15 @@
     ./build/main.js summary
 
 
+## TODOS:
+
+- encapsulate trace items into artefacts, ie: network request, paint, cpu,...
+- distribute report items via injectable iterators
+- calculate timings
+- introduce pretty format
+- add HTML reporter
+- ... a couple of other thousand things
+- new commands: repl
+- new option: session time, auto-reload (diff-reports based on reload interval)
+- new interfaces: as service, blessed (to see diffs)
+

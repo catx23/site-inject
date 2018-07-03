@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const argv_1 = require("../argv");
-const output_1 = require("../output");
 const puppeteer_1 = require("../renderer/puppeteer");
+const output_1 = require("../output");
 // no extra options, using defaults
 const options = (yargs) => argv_1.defaultOptions(yargs);
 exports.register = (cli) => {

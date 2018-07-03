@@ -1,5 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/////////////////////////////////////////////////////
+//
+//  Application types
+//
 var OutputTarget;
 (function (OutputTarget) {
     OutputTarget["STDOUT"] = "console";

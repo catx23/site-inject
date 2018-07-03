@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const types_1 = require("./types");
-const log_1 = require("./log");
+const _1 = require("./");
 const LIGHT = 'http://google.co.uk';
 const HEAVY = 'http://0.0.0.0:5555/app/xcf?debug=true&xblox=debug&xgrid=debug&davinci=debug&userDirectory=/PMaster/x4mm/user;';
 // default options for all commands
@@ -20,27 +19,35 @@ exports.defaultOptions = (yargs) => {
         describe: 'Output target [console|file]'
     }).option('path', {
         default: '',
-        describe: 'The target location on the local filesystem for --target==file'
+        describe: 'The target location on the local filesystem for --target=file'
+    }).option('debug', {
+        default: 'false',
+        describe: 'Enable internal debug message'
     });
 };
 // Sanitizes faulty user argv options for all commands.
 exports.sanitize = (argv) => {
     const args = argv;
+    args.cwd = args.cwd || process.cwd();
+    if (!args.url) {
+        // internal user error, should never happen!
+        _1.error('Invalid url, abort');
+        return process.exit();
+    }
     // path given but target is not file, correct to file
-    if (args.path && args.target === types_1.OutputTarget.FILE) {
-        args.target = types_1.OutputTarget.FILE;
-        log_1.warn('Path specified but target is not file! Correcting user argument to file ');
+    if (args.path && args.target !== _1.OutputTarget.FILE) {
+        args.target = _1.OutputTarget.FILE;
     }
-    // target is file but no path given, correct to console
-    if (args.target === types_1.OutputTarget.FILE && !args.path) {
-        args.target = types_1.OutputTarget.STDOUT;
-        log_1.warn('Target is file but no path specified! Correcting user argument to console');
+    // target is file but no path given, correct to default file
+    if (args.target === _1.OutputTarget.FILE && !args.path) {
+        args.path = _1.default_path(args.cwd, args.url);
     }
-    // format string not properly passed
-    if (!(argv.format in types_1.OutputFormat)) {
-        log_1.warn(`Unknown output format ${argv.format}! Default to ${types_1.OutputFormat.text}`);
-        args.format = types_1.OutputFormat.text;
+    // format string not valid
+    if (!(argv.format in _1.OutputFormat)) {
+        _1.warn(`Unknown output format ${argv.format}! Default to ${_1.OutputFormat.text}`);
+        args.format = _1.OutputFormat.text;
     }
-    return argv;
+    args.headless = /^\s*(true|1|on)\s*$/i.test(argv.headless);
+    return args;
 };
 //# sourceMappingURL=argv.js.map
