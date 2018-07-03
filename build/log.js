@@ -12,7 +12,7 @@ exports.error = (msg, ...rest) => glog(chalk_1.default.red(msg), ...rest);
 exports.warn = (msg, ...rest) => glog(chalk_1.default.yellow(msg), ...rest);
 exports.debug = (msg, ...rest) => glog(chalk_1.default.blue(msg), ...rest);
 exports.stack = (msg, ...rest) => glog(chalk_1.default.red(msg), new Error().stack);
-exports.inspect = (msg, d = null, pretty = true) => {
+exports.inspect = (msg, d = null) => {
     glog(chalk_1.default.blue(msg));
     d && jsome(d);
 };

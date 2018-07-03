@@ -8,10 +8,12 @@ import {
     default_trace_path,
     ReportEntry,
     NetworkReportEntry,
-    sizeToString
+    sizeToString,
+    log
 } from '../../';
 import { end_time } from './times';
 import { find_time } from './trace';
+import { rl } from './stdin';
 import { report, find_report, get_report } from './report';
 
 const included_categories = ['devtools.timeline'];
@@ -27,6 +29,20 @@ export class Puppeteer {
         return await browser.newPage();
     }
 
+    static async repl(url: string, options?: Options) {
+        const page = await this.begin(url, options);
+        await page.goto(url, {
+            timeout: 600000,
+            waitUntil: 'networkidle0'
+        });
+        const readline = rl(`${url}#`, (line: string) => {
+            page.evaluate(line).then((results) => {
+                inspect(`Did evaluate ${line} to `, results);
+            })
+        }, () => this.end(page));
+    }
+
+
     static async end(page: Page) {
 
         const browser = await page.browser();
@@ -41,9 +57,12 @@ export class Puppeteer {
             devtools: true
         });
         const page = await browser.newPage();
+        await page.goto(url, {
+            timeout: 600000,
+            waitUntil: 'networkidle0'
+        });
         const metrics = await page.metrics();
-        await page.close();
-        await browser.close();
+        await this.end(page);
         return metrics;
     }
 
@@ -90,13 +109,10 @@ export class Puppeteer {
         await page.tracing.stop();
 
         // --- extracting data from trace.json ---
-        const tracing = JSON.parse(readFileSync(traceFile, 'utf8').trim());
+        const tracing = JSON.parse(readFileSync(traceFile, 'utf8'));
 
         const dataReceivedEvents = tracing.traceEvents.filter(x => x.name === 'ResourceReceivedData');
         const dataResponseEvents = tracing.traceEvents.filter(x => x.name === 'ResourceReceiveResponse');
-
-        // const test = find_time(dataReceivedEvents, 'ResourceReceivedData');
-        inspect('test', dataReceivedEvents.find(x => x.name === 'ResourceReceivedData'));
 
         // find resource in responses or return default empty
         const content_response = (requestId: string): TraceEntry => dataResponseEvents.find((x) =>

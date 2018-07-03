@@ -11,7 +11,7 @@ export const error = (msg: string, ...rest: any[]) => glog(chalk.red(msg), ...re
 export const warn = (msg: string, ...rest) => glog(chalk.yellow(msg), ...rest);
 export const debug = (msg: string, ...rest) => glog(chalk.blue(msg), ...rest);
 export const stack = (msg: string, ...rest) => glog(chalk.red(msg), new Error().stack);
-export const inspect = (msg: string, d: any = null, pretty: boolean = true) => {
+export const inspect = (msg: string, d: any = null) => {
     glog(chalk.blue(msg));
     d && jsome(d);
 };

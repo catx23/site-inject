@@ -49,11 +49,9 @@ export const sanitize = (argv: CLI.Arguments): Options => {
     }
     // target is file but no path given, correct to default file
     if (args.target === OutputTarget.FILE && !args.path) {
-        // args.target = OutputTarget.STDOUT;
         args.path = default_path(args.cwd, args.url);
-        warn(`Target is file but no path specified! Using default file:  ${args.path}`);
     }
-    // format string not properly passed
+    // format string not valid
     if (!(argv.format in OutputFormat)) {
         warn(`Unknown output format ${argv.format}! Default to ${OutputFormat.text}`);
         args.format = OutputFormat.text;

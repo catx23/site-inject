@@ -12,6 +12,7 @@ const puppeteer_1 = require("puppeteer");
 const fs_1 = require("fs");
 const _1 = require("../../");
 const trace_1 = require("./trace");
+const stdin_1 = require("./stdin");
 const report_1 = require("./report");
 const included_categories = ['devtools.timeline'];
 class Puppeteer {
@@ -22,6 +23,20 @@ class Puppeteer {
                 devtools: false
             });
             return yield browser.newPage();
+        });
+    }
+    static repl(url, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const page = yield this.begin(url, options);
+            yield page.goto(url, {
+                timeout: 600000,
+                waitUntil: 'networkidle0'
+            });
+            const readline = stdin_1.rl(`${url}#`, (line) => {
+                page.evaluate(line).then((results) => {
+                    _1.inspect(`Did evaluate ${line} to `, results);
+                });
+            }, () => this.end(page));
         });
     }
     static end(page) {
@@ -38,9 +53,12 @@ class Puppeteer {
                 devtools: true
             });
             const page = yield browser.newPage();
+            yield page.goto(url, {
+                timeout: 600000,
+                waitUntil: 'networkidle0'
+            });
             const metrics = yield page.metrics();
-            yield page.close();
-            yield browser.close();
+            yield this.end(page);
             return metrics;
         });
     }
@@ -84,11 +102,9 @@ class Puppeteer {
             const navigationStart = trace_1.find_time(metrics, 'Timestamp') + nowTs;
             yield page.tracing.stop();
             // --- extracting data from trace.json ---
-            const tracing = JSON.parse(fs_1.readFileSync(traceFile, 'utf8').trim());
+            const tracing = JSON.parse(fs_1.readFileSync(traceFile, 'utf8'));
             const dataReceivedEvents = tracing.traceEvents.filter(x => x.name === 'ResourceReceivedData');
             const dataResponseEvents = tracing.traceEvents.filter(x => x.name === 'ResourceReceiveResponse');
-            // const test = find_time(dataReceivedEvents, 'ResourceReceivedData');
-            _1.inspect('test', dataReceivedEvents.find(x => x.name === 'ResourceReceivedData'));
             // find resource in responses or return default empty
             const content_response = (requestId) => dataResponseEvents.find((x) => x.args.data.requestId === requestId)
                 || { args: { data: { encodedDataLength: 0 } } };

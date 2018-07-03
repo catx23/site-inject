@@ -40,11 +40,9 @@ exports.sanitize = (argv) => {
     }
     // target is file but no path given, correct to default file
     if (args.target === _1.OutputTarget.FILE && !args.path) {
-        // args.target = OutputTarget.STDOUT;
         args.path = _1.default_path(args.cwd, args.url);
-        _1.warn(`Target is file but no path specified! Using default file:  ${args.path}`);
     }
-    // format string not properly passed
+    // format string not valid
     if (!(argv.format in _1.OutputFormat)) {
         _1.warn(`Unknown output format ${argv.format}! Default to ${_1.OutputFormat.text}`);
         args.format = _1.OutputFormat.text;

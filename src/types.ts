@@ -29,7 +29,7 @@ export interface Options {
     // @TODO: reload interval
     reload?: number;
     // @TODO: repl. --repl=true=interactive or repl=path to specify script
-    repl?: string;
+    repl?: string | boolean;
     // TODO: colored ouput
     colors?: boolean;
 }
