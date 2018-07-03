@@ -29,7 +29,9 @@ export class Puppeteer {
         });
         return await browser.newPage();
     }
-
+    static async crawler(url: string, options?: Options) {
+        const page = await this.begin(url, options);
+    }
     static async repl(url: string, options?: Options) {
         const page = await this.begin(url, options);
         page.on('console', msg => inspect('Console Message:',msg.text()));
