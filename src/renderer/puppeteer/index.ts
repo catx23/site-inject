@@ -9,7 +9,8 @@ import {
     ReportEntry,
     NetworkReportEntry,
     sizeToString,
-    log
+    log,
+    spinner
 } from '../../';
 import { end_time } from './times';
 import { find_time } from './trace';
@@ -31,11 +32,13 @@ export class Puppeteer {
 
     static async repl(url: string, options?: Options) {
         const page = await this.begin(url, options);
-        page.on('console', msg => console.log(msg.text()));
+        page.on('console', msg => inspect('Console Message:',msg.text()));
+
         await page.goto(url, {
             timeout: 600000,
             waitUntil: 'networkidle0'
         });
+        
         const readline = rl(`${url}#`, (line: string) => {
             page.evaluate(line).then((results) => {
                 inspect(`Did evaluate ${line} to `, results);

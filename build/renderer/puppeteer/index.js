@@ -28,10 +28,13 @@ class Puppeteer {
     static repl(url, options) {
         return __awaiter(this, void 0, void 0, function* () {
             const page = yield this.begin(url, options);
+            page.on('console', msg => _1.inspect('Console Message:', msg.text()));
+            const spin = _1.spinner(`Start navigating to ${url}`);
             yield page.goto(url, {
                 timeout: 600000,
                 waitUntil: 'networkidle0'
             });
+            // spin.stop();
             const readline = stdin_1.rl(`${url}#`, (line) => {
                 page.evaluate(line).then((results) => {
                     _1.inspect(`Did evaluate ${line} to `, results);
