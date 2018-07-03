@@ -31,6 +31,7 @@ export class Puppeteer {
 
     static async repl(url: string, options?: Options) {
         const page = await this.begin(url, options);
+        page.on('console', msg => console.log(msg.text()));
         await page.goto(url, {
             timeout: 600000,
             waitUntil: 'networkidle0'
