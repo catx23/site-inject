@@ -11,7 +11,9 @@ import {
     NetworkReportEntry,
     sizeToString,
     log,
-    spinner
+    spinner,
+    STATS_SUFFIX,
+    TRACE_SUFFIX
 } from '../../';
 import { end_time } from './times';
 import { find_time } from './trace';
@@ -25,7 +27,7 @@ export class Puppeteer {
 
     static clean(url: string, options: Options) {
         iterator(options.cwd, {
-            matching: ['*_trace.json', '*_stats.json']
+            matching: [`*${STATS_SUFFIX}`, `*${TRACE_SUFFIX}`]
         }).then((it) => {
             let node: IProcessingNode = null;
             while (node = it.next()) {
@@ -43,9 +45,12 @@ export class Puppeteer {
         return await browser.newPage();
     }
     static async crawler(url: string, options?: Options) {
+        
         const page = await this.begin(url, options);
+        
     }
     static async repl(url: string, options?: Options) {
+        
         const page = await this.begin(url, options);
         page.on('console', msg => inspect('Console Message:', msg.text()));
 

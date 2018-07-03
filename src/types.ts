@@ -115,7 +115,7 @@ export interface TraceEntry {
     pid: number;
     tid: number;
     ts: number;
-    ph: string;
+    ph: string; // B: begin, | E: end; For async events: S: start, F: finish
     cat: string;
     name: string;
     args: TraceArgs;

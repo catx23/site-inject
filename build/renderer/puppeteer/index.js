@@ -20,7 +20,7 @@ const included_categories = ['devtools.timeline'];
 class Puppeteer {
     static clean(url, options) {
         iterator_1.async(options.cwd, {
-            matching: ['*_trace.json', '*_stats.json']
+            matching: [`*${_1.STATS_SUFFIX}`, `*${_1.TRACE_SUFFIX}`]
         }).then((it) => {
             let node = null;
             while (node = it.next()) {
